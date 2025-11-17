@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import Filters from '../components/Filters'
 import RecipeCard from '../components/RecipeCard'
-import { apiGet, apiPost } from '../utils/api'
+import { apiGet } from '../utils/api'
+import { useLocation } from 'react-router-dom'
 
 export default function Recipes(){
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
+  const location = useLocation()
 
   async function fetchList(params={}){
     setLoading(true)
@@ -15,7 +17,11 @@ export default function Recipes(){
     } finally { setLoading(false) }
   }
 
-  useEffect(()=>{ fetchList() }, [])
+  useEffect(()=>{
+    const qs = new URLSearchParams(location.search)
+    const q = qs.get('q') || ''
+    fetchList(q ? { q } : {})
+  }, [location.search])
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-8">
